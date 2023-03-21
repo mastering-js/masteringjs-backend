@@ -2,7 +2,10 @@
   "name": "masteringjs-backend",
   "version": "0.0.0",
   "dependencies": {
-    "express": "4.18.2"
+    "@awaitjs/express": "0.9.0",
+    "cors": "2.8.5",
+    "express": "4.18.2",
+    "openai": "3.2.1"
   },
   "scripts": {
     "start": "node ."
