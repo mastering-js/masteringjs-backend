@@ -2,9 +2,12 @@
 
 const { addAsync } = require('@awaitjs/express');
 const express = require('express');
+const mongoose = require('./src/mongoose');
 const { name, version } = require('./package.json');
 
 const port = process.env.PORT || 3000;
+
+mongoose.connect(process.env.ASTRA_URI, { isAstra: true });
 
 const app = addAsync(express());
 app.use(require('cors')());
@@ -18,6 +21,7 @@ let last100Requests = [];
 app.use(express.json());
 
 app.postAsync('/awaitify', limitTo100Requests(), require('./awaitify'));
+app.postAsync('/chatbot', limitTo100Requests(), require('./chatbot'));
 
 app.listen(port);
 console.log('Listening on port', port);
