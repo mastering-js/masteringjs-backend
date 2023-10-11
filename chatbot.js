@@ -16,7 +16,6 @@ const openai = new OpenAIApi(configuration);
 module.exports = async function chatbot(req, res) {
   const { question } = req.body;
   const embedding = await createEmbedding(question).catch(err => {
-    console.log('F', err);
     throw err;
   });
 
@@ -39,7 +38,11 @@ module.exports = async function chatbot(req, res) {
     max_tokens: 2000
   });
 
-  res.json({ content: response.data.choices[0].message.content });
+  res.json({
+    content: response.data.choices[0].message.content,
+    link: articles[0].url,
+    title: articles[0].title
+  });
 }
 
 function createEmbedding(input) {
