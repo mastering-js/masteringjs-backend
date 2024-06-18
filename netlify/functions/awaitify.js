@@ -3,6 +3,7 @@
 const assert = require('assert');
 const { Configuration, OpenAIApi } = require('openai');
 const RateLimit = require('../../src/db/rateLimit');
+const connect = require('../../src/connect');
 const mongoose = require('mongoose');
 
 const maxOpenAIRequestsPerHour = 250;
@@ -45,6 +46,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 exports.handler = async (event, context, callback) => {
+  await connect();
   await checkRateLimit('openai.createChatCompletion');
   const { code } = JSON.parse(event.body);
   console.log('what is code', code);
@@ -67,7 +69,6 @@ exports.handler = async (event, context, callback) => {
 }
 
 async function checkRateLimit(functionName) {
-  await mongoose.connect('mongodb://localhost:27017/rates');
   const rateLimit = await RateLimit.collection.findOneAndUpdate(
     {},
     { $push: { recentRequests: { date: new Date(), url: functionName } } },
@@ -82,5 +83,4 @@ async function checkRateLimit(functionName) {
       throw new Error(`Maximum ${maxOpenAIRequestsPerHour} requests per hour`);
     }
   }
-  await mongoose.disconnect();
 }
