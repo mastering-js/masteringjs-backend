@@ -2,12 +2,11 @@
 
 const Article = require('../../src/db/article');
 const { Configuration, OpenAIApi } = require('openai');
+const RateLimit = require('../../src/db/rateLimit');
 const assert = require('assert');
 const axios = require('axios');
 const connect = require('../../src/connect');
 const similarity = require('compute-cosine-similarity');
-const RateLimit = require('../../src/db/rateLimit');
-const mongoose = require('mongoose');
 
 const maxOpenAIRequestsPerHour = 250;
 
@@ -21,7 +20,7 @@ const openai = new OpenAIApi(configuration);
 
 exports.handler = async (event, context, callback) => {
   await connect();
-  const { question } = JSON.parse(event.body);
+  const { question } = JSON.parse(event.body || {});
   const embedding = await createEmbedding(question).catch(err => {
     throw err;
   });

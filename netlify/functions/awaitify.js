@@ -4,7 +4,6 @@ const assert = require('assert');
 const { Configuration, OpenAIApi } = require('openai');
 const RateLimit = require('../../src/db/rateLimit');
 const connect = require('../../src/connect');
-const mongoose = require('mongoose');
 
 const maxOpenAIRequestsPerHour = 250;
 
@@ -48,24 +47,23 @@ const openai = new OpenAIApi(configuration);
 exports.handler = async (event, context, callback) => {
   await connect();
   await checkRateLimit('openai.createChatCompletion');
-  const { code } = JSON.parse(event.body);
-  console.log('what is code', code);
+  const { code } = JSON.parse(event.body || {});
+
   const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'user',
-          content: prompt(code)
-        }
-      ],
-      temperature: 0,
-      max_tokens: 2000
-    });
-    console.log('what is response', response, response.data.choices[0].message.content);
-    return callback(null, {
-      statusCode: 200,
-      content: response.data.choices[0].message.content
-    });
+    model: 'gpt-3.5-turbo',
+    messages: [
+      {
+        role: 'user',
+        content: prompt(code)
+      }
+    ],
+    temperature: 0,
+    max_tokens: 2000
+  });
+  return callback(null, {
+    statusCode: 200,
+    content: response.data.choices[0].message.content
+  });
 }
 
 async function checkRateLimit(functionName) {
