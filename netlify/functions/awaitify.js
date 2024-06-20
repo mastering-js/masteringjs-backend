@@ -44,7 +44,19 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-exports.handler = async (event, context, callback) => {
+const headers = Object.freeze({
+  'Access-Control-Allow-Origin': '*'
+});
+
+exports.handler = async (event, context) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      body: '',
+      headers
+    };
+  }
+
   await connect();
   await checkRateLimit('openai.createChatCompletion');
   const { code } = JSON.parse(event.body || {});
@@ -60,9 +72,10 @@ exports.handler = async (event, context, callback) => {
     temperature: 0,
     max_tokens: 2000
   });
-  return callback(null, {
+  return {
     statusCode: 200,
-    content: response.data.choices[0].message.content
+    content: response.data.choices[0].message.content,
+    headers
   });
 }
 
