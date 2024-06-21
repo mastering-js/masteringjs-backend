@@ -77,7 +77,7 @@ exports.handler = async (event, context) => {
     });
     return {
       statusCode: 200,
-      body: response.data.choices[0].message.content,
+      body: JSON.stringify({ content: response.data.choices[0].message.content }),
       headers
     };
   } catch (error) {
