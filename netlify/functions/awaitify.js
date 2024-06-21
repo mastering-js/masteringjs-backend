@@ -46,7 +46,8 @@ const openai = new OpenAIApi(configuration);
 
 const headers = Object.freeze({
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE'
+  'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  'Access-Control-Allow-Headers': '*'
 });
 
 exports.handler = async (event, context) => {
