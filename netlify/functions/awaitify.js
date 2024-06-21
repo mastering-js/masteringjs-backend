@@ -74,9 +74,9 @@ exports.handler = async (event, context) => {
   });
   return {
     statusCode: 200,
-    content: response.data.choices[0].message.content,
+    body: response.data.choices[0].message.content,
     headers
-  });
+  };
 }
 
 async function checkRateLimit(functionName) {
