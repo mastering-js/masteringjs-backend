@@ -57,26 +57,34 @@ exports.handler = async (event, context) => {
     };
   }
 
-  await connect();
-  await checkRateLimit('openai.createChatCompletion');
-  const { code } = JSON.parse(event.body || {});
+  try {
+    await connect();
+    await checkRateLimit('openai.createChatCompletion');
+    const { code } = JSON.parse(event.body || {});
 
-  const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    messages: [
-      {
-        role: 'user',
-        content: prompt(code)
-      }
-    ],
-    temperature: 0,
-    max_tokens: 2000
-  });
-  return {
-    statusCode: 200,
-    body: response.data.choices[0].message.content,
-    headers
-  };
+    const response = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'user',
+          content: prompt(code)
+        }
+      ],
+      temperature: 0,
+      max_tokens: 2000
+    });
+    return {
+      statusCode: 200,
+      body: response.data.choices[0].message.content,
+      headers
+    };
+  } catch (error) {
+    return {
+      statusCode: 500,
+      body: error.message,
+      headers
+    };
+  }
 }
 
 async function checkRateLimit(functionName) {
